@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Alef:wght@400;700&display=swap" rel="stylesheet">
+    <title>Letras Sofit - Talmid</title>
+    <style>
+        :root { --primary: #1a2a3a; --secondary: #2980b9; --gold: #f39c12; --bg: #f4f7f6; --accent: #e74c3c; }
+        body { font-family: 'Segoe UI', 'Alef', sans-serif; background: var(--bg); margin: 0; padding: 20px; text-align: center; }
+        
+        .container { max-width: 600px; margin: 0 auto; }
+        h1 { color: var(--primary); border-bottom: 2px solid var(--gold); display: inline-block; }
+        
+        .instrucao { background: white; padding: 20px; border-radius: 15px; margin-bottom: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: left; border-left: 5px solid var(--secondary); }
+
+        /* Display de Transformação */
+        .display-sofit {
+            background: white; border: 3px solid var(--primary); border-radius: 20px;
+            height: 320px; margin: 20px 0; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; position: relative; overflow: hidden;
+        }
+        
+        .char-main { font-size: 160px; color: #000; transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .label-status { margin-top: 10px; font-weight: bold; color: var(--gold); text-transform: uppercase; }
+
+        /* Botões das 5 Letras */
+        .grid-letras { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 20px 0; direction: rtl; }
+        .btn-letra { padding: 15px 5px; background: white; border: 2px solid #ddd; border-radius: 10px; cursor: pointer; font-size: 1.4rem; font-weight: bold; transition: 0.3s; }
+        .btn-letra.active { background: var(--secondary); color: white; border-color: var(--secondary); }
+
+        .btn-transformar { width: 100%; padding: 20px; background: var(--accent); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
+
+        .comando-caderno { background: #fff; border: 2px dashed #7f8c8d; padding: 15px; border-radius: 10px; margin-top: 20px; text-align: left; font-size: 0.9rem; }
+        
+        .btn-next { width: 100%; padding: 18px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: bold; margin-top: 30px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <a href="4.html" style="text-decoration:none; color:var(--secondary); font-weight:bold;">← Voltar à Prática do Salmo</a>
+    
+    <h1>Letras Sofit (Finais)</h1>
+
+    <div class="instrucao" id="texto-intro">
+        No Hebraico, 5 letras mudam sua anatomia quando encerram uma palavra. Elas "esticam a perna" para baixo da linha. O som não muda, apenas a forma visual para indicar o fim.
+    </div>
+
+    <div class="display-sofit">
+        <div id="letra-animada" class="char-main">כ</div>
+        <div id="status-label" class="label-status">Forma Comum: Khaf</div>
+    </div>
+
+    <button class="btn-transformar" onclick="transformar()">ESTRUTURAR PARA O FINAL →</button>
+
+    <div class="grid-letras">
+        <button class="btn-letra active" onclick="selecionar('כ', 'ך', 'Rrraf', 'Khaf')">כ</button>
+        <button class="btn-letra" onclick="selecionar('מ', 'ם', 'Mem', 'Mem')">מ</button>
+        <button class="btn-letra" onclick="selecionar('נ', 'ן', 'Nun', 'Nun')">נ</button>
+        <button class="btn-letra" onclick="selecionar('פ', 'ף', 'Fê', 'Pe/Fe')">פ</button>
+        <button class="btn-letra" onclick="selecionar('צ', 'ץ', 'Tsade', 'Tsade')">צ</button>
+    </div>
+
+    <div class="comando-caderno">
+        <strong>✍️ Exercício de Coordenadas:</strong> No seu caderno, desenhe a letra comum e, ao lado, a sua versão <b>Sofit</b>. Note como a perna da letra deve ultrapassar a linha de base onde as outras letras se apoiam.
+    </div>
+
+    <button class="btn-next" onclick="window.location.href='6.html'">PRÓXIMO: O MISTÉRIO DO DAGESH →</button>
+</div>
+
+<script>
+    let atualComum = 'כ';
+    let atualSofit = 'ך';
+    let nomeVoz = 'Rrraf';
+    let nomeTela = 'Khaf';
+    let ehSofit = false;
+
+    function selecionar(comum, sofit, voz, tela) {
+        atualComum = comum;
+        atualSofit = sofit;
+        nomeVoz = voz;
+        nomeTela = tela;
+        ehSofit = false;
+        
+        const el = document.getElementById('letra-animada');
+        el.innerText = comum;
+        el.style.color = "#000";
+        el.style.transform = "scale(1)";
+        document.getElementById('status-label').innerText = "Forma Comum: " + tela;
+        
+        document.querySelectorAll('.btn-letra').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        
+        falar(voz);
+    }
+
+    function transformar() {
+        const el = document.getElementById('letra-animada');
+        const label = document.getElementById('status-label');
+        
+        if (!ehSofit) {
+            el.style.transform = "translateY(20px) scale(1.1)";
+            el.style.color = "var(--secondary)";
+            setTimeout(() => {
+                el.innerText = atualSofit;
+                label.innerText = nomeTela + " Sofit (Final)";
+                falar(nomeVoz + " Sofit");
+            }, 300);
+            ehSofit = true;
+        } else {
+            el.style.transform = "translateY(0) scale(1)";
+            el.style.color = "#000";
+            setTimeout(() => {
+                el.innerText = atualComum;
+                label.innerText = "Forma Comum: " + nomeTela;
+            }, 300);
+            ehSofit = false;
+        }
+    }
+
+    function falar(texto) {
+        const msg = new SpeechSynthesisUtterance(texto);
+        msg.lang = 'pt-BR';
+        window.speechSynthesis.speak(msg);
+    }
+
+    window.onload = () => falar(document.getElementById('texto-intro').innerText);
+</script>
+
+</body>
+</html>

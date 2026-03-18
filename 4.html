@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Alef:wght@400;700&display=swap" rel="stylesheet">
+    <title>Prática de Escrita - Talmid</title>
+    <style>
+        :root { --hebraico: #e74c3c; --translit: #2980b9; --traducao: #27ae60; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', 'Alef', sans-serif; background: var(--bg); margin: 0; padding: 20px; text-align: center; }
+        
+        .container { max-width: 600px; margin: 0 auto; }
+        
+        /* Box Hebraico com Efeito Digitação */
+        .box-hebraico { 
+            font-size: 3.5rem; color: var(--hebraico); direction: rtl; 
+            margin: 30px 0; min-height: 80px; font-weight: bold;
+            border-bottom: 2px solid #ddd; padding-bottom: 10px;
+        }
+
+        .box-translit { font-size: 1.5rem; color: var(--translit); margin: 20px 0; font-weight: 600; }
+        .box-traducao { font-size: 1.3rem; color: var(--traducao); margin: 20px 0; font-style: italic; }
+        
+        .referencia { font-weight: bold; color: #555; margin-top: 10px; display: block; }
+
+        .btn-play { 
+            background: #333; color: white; border: none; padding: 15px 30px; 
+            border-radius: 50px; cursor: pointer; font-weight: bold; margin: 10px;
+        }
+
+        .comando-caderno { 
+            background: #fff; border: 3px dashed var(--hebraico); padding: 20px; 
+            border-radius: 15px; margin-top: 40px; text-align: left;
+        }
+        
+        /* Efeito de digitação */
+        .typing::after { content: "|"; animation: blink 0.7s infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2 style="color:#1a2a3a;">Prática de Leitura e Escrita</h2>
+
+    <div class="box-hebraico" id="hebraico"></div>
+
+    <div class="box-translit" id="translit"></div>
+
+    <div class="box-traducao" id="traducao"></div>
+
+    <span class="referencia">Tehilim (Salmos) 23:1</span>
+
+    <div style="margin-top: 20px;">
+        <button class="btn-play" onclick="iniciarExercicio()">▶ INICIAR LEITURA</button>
+    </div>
+
+    <div class="comando-caderno">
+        <h4 style="margin-top:0; color:var(--hebraico);">✍️ COMANDO AO APRENDIZ:</h4>
+        <p>Agora, abra seu caderno. Copie a frase em hebraico <b>da direita para a esquerda</b>, respeitando cada sinal diacrítico (Nekudot) que aprendemos. Use o exemplo acima como guia visual para suas coordenadas de escrita.</p>
+    </div>
+
+    <button style="width:100%; margin-top:30px; padding:20px; border-radius:12px; border:none; background:#1a2a3a; color:white; font-weight:bold; cursor:pointer;" onclick="window.location.href='5.html'">AVANÇAR PARA LETRAS SOFIT →</button>
+</div>
+
+<script>
+    const textoHebraico = "יְהוָה רֹעִי לֹא אֶחְסָר";
+    const textoTranslit = "Adonai Royí lo echsár";
+    const textoTraducao = "O Senhor é meu Pastor e nada me faltará";
+
+    // Fonética para o Narrador (ênfase no Y e som de RR)
+    const foneticaTranslit = "Adonai Ro-í, lo e-rr-sár"; 
+    const foneticaTraducao = "O Senhor é o meu Pastor e nada me faltará";
+
+    function digitar(elemento, texto, velocidade, callback) {
+        let i = 0;
+        elemento.innerHTML = "";
+        function frame() {
+            if (i < texto.length) {
+                elemento.innerHTML += texto.charAt(i);
+                i++;
+                setTimeout(frame, velocidade);
+            } else if (callback) {
+                callback();
+            }
+        }
+        frame();
+    }
+
+    function iniciarExercicio() {
+        // 1. Digitação Hebraica (Vermelho)
+        digitar(document.getElementById('hebraico'), textoHebraico, 150, () => {
+            
+            // 2. Aparece Transliteração (Azul) e narra fonética
+            document.getElementById('translit').innerText = textoTranslit;
+            falar(foneticaTranslit, 'he-IL');
+
+            setTimeout(() => {
+                // 3. Aparece Tradução (Verde) e narra
+                document.getElementById('traducao').innerText = textoTraducao;
+                falar(foneticaTraducao, 'pt-BR');
+            }, 2500);
+        });
+    }
+
+    function falar(texto, lang) {
+        const msg = new SpeechSynthesisUtterance(texto);
+        msg.lang = lang;
+        msg.rate = 0.8;
+        window.speechSynthesis.speak(msg);
+    }
+</script>
+
+</body>
+</html>

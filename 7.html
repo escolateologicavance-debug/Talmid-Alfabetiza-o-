@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Alef:wght@400;700&display=swap" rel="stylesheet">
+    <title>Quiz Talmid - Moré Gilberto</title>
+    <style>
+        :root { --primary: #1a2a3a; --gold: #f39c12; --success: #27ae60; --error: #e74c3c; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', 'Alef', sans-serif; background: var(--bg); margin: 0; padding: 15px; color: #333; }
+        
+        .container { max-width: 600px; margin: 0 auto; text-align: center; }
+
+        /* Cabeçalho */
+        .header-talmid { background: var(--primary); color: white; padding: 15px; border-radius: 12px; margin-bottom: 20px; }
+        .header-talmid h2 { margin: 0; font-size: 1.1rem; }
+        .header-talmid p { margin: 5px 0 0; font-size: 0.85rem; color: var(--gold); }
+
+        /* Card do Quiz */
+        .quiz-card { background: white; border-radius: 20px; padding: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); position: relative; min-height: 300px; }
+        .pergunta-texto { font-size: 1.2rem; font-weight: bold; margin-bottom: 20px; color: var(--primary); }
+        
+        .display-letra { font-size: 100px; margin: 10px 0; color: var(--primary); font-family: 'Alef', sans-serif; }
+
+        /* Opções de Resposta */
+        .opcoes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+        .btn-opcao { 
+            padding: 15px; background: #fff; border: 2px solid #ddd; border-radius: 12px; 
+            font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.2s; 
+        }
+        .btn-opcao:active { transform: scale(0.95); }
+        
+        /* Feedback Animado */
+        .feedback { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 4rem; display: none; z-index: 10; }
+
+        /* Barra de Progresso */
+        .progress-container { width: 100%; background: #ddd; height: 10px; border-radius: 5px; margin: 20px 0; overflow: hidden; }
+        .progress-bar { height: 100%; background: var(--gold); width: 0%; transition: 0.3s; }
+
+        /* Banner App */
+        .banner-app { background: #e8f4fd; border: 2px solid var(--secondary); padding: 15px; border-radius: 12px; margin-top: 30px; font-size: 0.9rem; }
+
+        /* Rodapé Jurídico */
+        footer { margin-top: 40px; font-size: 0.75rem; color: #7f8c8d; line-height: 1.4; border-top: 1px solid #ddd; padding-top: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header class="header-talmid">
+        <h2>Talmid - Desafio de Alfabetização</h2>
+        <p>Moré Gilberto</p>
+    </header>
+
+    <div class="progress-container"><div class="progress-bar" id="progress"></div></div>
+
+    <div class="quiz-card" id="quiz-body">
+        <div id="feedback" class="feedback"></div>
+        <div class="pergunta-texto" id="pergunta">Qual é o nome desta letra?</div>
+        <div class="display-letra" id="alvo-letra">א</div>
+        <div class="opcoes-grid" id="opcoes"></div>
+    </div>
+
+    <div class="banner-app">
+        <strong>🚀 Suba de Nível!</strong><br>
+        Conheça o <b>App do Hebraico Médio</b>: Gramática avançada, números e glossário rico para sua jornada.
+    </div>
+
+    <footer>
+        <p><b>Moré Gilberto Moreira</b><br>
+        Cursos Livres - Lei nº 9.394/96 – Diretrizes e Bases da Educação Nacional.<br>
+        Válido em todo território nacional conforme Art. 205 e 206 da Constituição Federal.<br>
+        Itanhangá-MT - BR - Sé 21 | Todos os direitos reservados ©</p>
+    </footer>
+</div>
+
+<script>
+    const bancoPerguntas = [
+        { l: 'א', r: 'Alef', o: ['Alef', 'Ayin', 'Bet', 'Gimel'] },
+        { l: 'בּ', r: 'Bet', o: ['Vet', 'Bet', 'Kaf', 'Pe'] },
+        { l: 'ב', r: 'Vet', o: ['Bet', 'Vet', 'Nun', 'Resh'] },
+        { l: 'ג', r: 'Gimel', o: ['Zayin', 'Gimel', 'Dalet', 'He'] },
+        { l: 'ד', r: 'Dalet', o: ['Resh', 'Dalet', 'Vav', 'Zayin'] },
+        { l: 'ה', r: 'He', o: ['Chet', 'He', 'Tav', 'Khet'] },
+        { l: 'ו', r: 'Vav', o: ['Zayin', 'Vav', 'Yod', 'Nun'] },
+        { l: 'ז', r: 'Zayin', o: ['Vav', 'Zayin', 'Nun', 'Gimel'] },
+        { l: 'ח', r: 'Chet', o: ['He', 'Chet', 'Tav', 'Khaf'] },
+        { l: 'ט', r: 'Tet', o: ['Tav', 'Tet', 'Mem', 'Samech'] },
+        { l: 'י', r: 'Yod', o: ['Vav', 'Yod', 'Zayin', 'Nun'] },
+        { l: 'כּ', r: 'Kaf', o: ['Khaf', 'Kaf', 'Bet', 'Pe'] },
+        { l: 'ך', r: 'Khaf Sofit', o: ['Nun Sofit', 'Khaf Sofit', 'Resh', 'Dalet'] },
+        { l: 'ל', r: 'Lamed', o: ['Lamed', 'Ayin', 'Tsade', 'Tet'] },
+        { l: 'ם', r: 'Mem Sofit', o: ['Samech', 'Mem Sofit', 'Tet', 'Nun Sofit'] },
+        { l: 'ס', r: 'Samech', o: ['Mem Sofit', 'Samech', 'Ayin', 'Tet'] },
+        { l: 'ע', r: 'Ayin', o: ['Alef', 'Ayin', 'Tsade', 'Lamed'] },
+        { l: 'פּ', r: 'Pe', o: ['Fe', 'Pe', 'Bet', 'Kaf'] },
+        { l: 'ף', r: 'Fe Sofit', o: ['Tsade Sofit', 'Fe Sofit', 'Khaf Sofit', 'Nun'] },
+        { l: 'שׁ', r: 'Shin', o: ['Sin', 'Shin', 'Samech', 'Tsade'] }
+    ];
+
+    let perguntaAtual = 0;
+
+    function carregarPergunta() {
+        if (perguntaAtual >= bancoPerguntas.length) {
+            finalizarQuiz();
+            return;
+        }
+
+        const dados = bancoPerguntas[perguntaAtual];
+        document.getElementById('alvo-letra').innerText = dados.l;
+        const containerOpcoes = document.getElementById('opcoes');
+        containerOpcoes.innerHTML = "";
+        
+        // Embaralhar opções
+        const opcoesMisturadas = dados.o.sort(() => Math.random() - 0.5);
+
+        opcoesMisturadas.forEach(opcao => {
+            const btn = document.createElement('button');
+            btn.className = 'btn-opcao';
+            btn.innerText = opcao;
+            btn.onclick = () => checarResposta(opcao, dados.r);
+            containerOpcoes.appendChild(btn);
+        });
+
+        const progresso = (perguntaAtual / bancoPerguntas.length) * 100;
+        document.getElementById('progress').style.width = progresso + "%";
+    }
+
+    function checarResposta(escolha, correta) {
+        const fb = document.getElementById('feedback');
+        fb.style.display = "block";
+
+        if (escolha === correta) {
+            fb.innerText = "✅";
+            fb.style.color = "var(--success)";
+            falar("Correto!");
+        } else {
+            fb.innerText = "❌";
+            fb.style.color = "var(--error)";
+            falar("Tente novamente!");
+        }
+
+        setTimeout(() => {
+            fb.style.display = "none";
+            if (escolha === correta) {
+                perguntaAtual++;
+                carregarPergunta();
+            }
+        }, 1000);
+    }
+
+    function finalizarQuiz() {
+        document.getElementById('quiz-body').innerHTML = `
+            <h2 style="color:var(--success)">Mazal Tov!</h2>
+            <p>Você concluiu a base da alfabetização hebraica.</p>
+            <div style="font-size:4rem">📜</div>
+            <button class="btn-opcao" style="width:100%; margin-top:20px;" onclick="location.reload()">REINICIAR DESAFIO</button>
+        `;
+        falar("Parabéns! Você concluiu o desafio.");
+    }
+
+    function falar(t) {
+        const msg = new SpeechSynthesisUtterance(t);
+        msg.lang = 'pt-BR';
+        window.speechSynthesis.speak(msg);
+    }
+
+    window.onload = carregarPergunta;
+</script>
+
+</body>
+</html>

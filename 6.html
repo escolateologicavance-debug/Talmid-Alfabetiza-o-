@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Alef:wght@400;700&display=swap" rel="stylesheet">
+    <title>Dagesh - Talmid</title>
+    <style>
+        :root { --primary: #1a2a3a; --secondary: #2980b9; --gold: #f39c12; --bg: #f4f7f6; --accent: #e74c3c; }
+        body { font-family: 'Segoe UI', 'Alef', sans-serif; background: var(--bg); margin: 0; padding: 15px; color: #333; }
+        
+        .container { max-width: 600px; margin: 0 auto; text-align: center; }
+
+        /* Cabeçalho Gilberto */
+        .header-talmid { background: var(--primary); color: white; padding: 15px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .header-talmid h2 { margin: 0; font-size: 1.1rem; letter-spacing: 1px; }
+        .header-talmid p { margin: 5px 0 0; font-size: 0.85rem; color: var(--gold); font-weight: bold; }
+        
+        /* Display Central */
+        .display-dagesh {
+            background: white; border: 2px solid var(--primary); border-radius: 20px;
+            height: 320px; margin: 15px 0; display: flex; flex-direction: column;
+            align-items: center; justify-content: space-between; padding: 30px 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        
+        .char-main { font-size: 170px; color: #000; font-family: 'Alef', sans-serif; line-height: 1; }
+        
+        /* Ajuste do Texto Azul (Som) */
+        .label-status { 
+            font-weight: bold; color: var(--secondary); 
+            text-transform: uppercase; font-size: 1rem;
+            margin-top: 10px; /* Garante que não encoste na linha */
+        }
+
+        .btn-toggle-dagesh { 
+            width: 100%; padding: 18px; background: var(--primary); color: white; 
+            border: none; border-radius: 10px; font-size: 1.1rem; font-weight: bold; 
+            cursor: pointer; margin-bottom: 15px; 
+        }
+
+        .grid-letras { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 15px 0; direction: rtl; }
+        .btn-letra { padding: 15px 5px; background: white; border: 2px solid #ddd; border-radius: 10px; cursor: pointer; font-size: 1.5rem; font-weight: bold; }
+        .btn-letra.active { border-color: var(--gold); background: #fffcf0; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+
+        .comando-caderno { background: #fff; border: 2px dashed var(--secondary); padding: 15px; border-radius: 10px; text-align: left; font-size: 0.9rem; margin-top: 20px; line-height: 1.4; }
+        
+        .btn-next { width: 100%; padding: 18px; background: #27ae60; color: white; border: none; border-radius: 10px; font-weight: bold; margin-top: 25px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header class="header-talmid">
+        <h2>Talmid - Laboratório Prático de Hebraico</h2>
+        <p>Moré Gilberto</p>
+    </header>
+
+    <div style="text-align: left;">
+        <button onclick="falarIntro()" style="background:none; border:none; cursor:pointer; font-size: 1.3rem;">🔊 Narrar</button>
+    </div>
+
+    <div class="display-dagesh">
+        <div id="letra-animada" class="char-main">בּ</div>
+        <div id="status-label" class="label-status">Som Forte (B)</div>
+    </div>
+
+    <button class="btn-toggle-dagesh" onclick="alternarDagesh()">REMOVER / ADICIONAR PONTO</button>
+
+    <div class="grid-letras">
+        <button class="btn-letra active" onclick="selecionar('בּ', 'ב', 'Bet', 'Vet', 'Bê', 'Vét')">ב</button>
+        <button class="btn-letra" onclick="selecionar('כּ', 'כ', 'Kaf', 'Khaf', 'Ká', 'Rrraf')">כ</button>
+        <button class="btn-letra" onclick="selecionar('פּ', 'פ', 'Pe', 'Fe', 'Pê', 'Fê')">פ</button>
+    </div>
+
+    <div class="comando-caderno">
+        ✍️ <b>Treino de Percepção:</b> Desenhe as letras <b>Bet, Kaf e Pe</b> em seu caderno. Coloque o ponto no centro e escreva o som forte ao lado. Depois, desenhe-as sem o ponto e anote o som suave.
+    </div>
+
+    <button class="btn-next" onclick="window.location.href='7.html'">CONCLUIR FASE DE ALFABETIZAÇÃO →</button>
+</div>
+
+<script>
+    let comDagesh = 'בּ';
+    let semDagesh = 'ב';
+    let nomeForte = 'Bet';
+    let nomeSuave = 'Vet';
+    let vozForte = 'Bê';
+    let vozSuave = 'Vét';
+    let temPonto = true;
+
+    // Ajuste fonético: "Daguersh" com som de G de gato
+    const textoIntro = "O Daguer-sh é um ponto que aparece dentro de algumas letras. Ele funciona como um fortalecedor do som. Quando o ponto está presente, o som é seco e forte. Sem o ponto, o som sopra suavemente.";
+
+    function selecionar(forte, suave, nForte, nSuave, vForte, vSuave) {
+        comDagesh = forte;
+        semDagesh = suave;
+        nomeForte = nForte;
+        nomeSuave = nSuave;
+        vozForte = vForte;
+        vozSuave = vSuave;
+        temPonto = true;
+        
+        document.getElementById('letra-animada').innerText = forte;
+        document.getElementById('status-label').innerText = "Som Forte (" + nForte + ")";
+        
+        document.querySelectorAll('.btn-letra').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        
+        falar(vForte);
+    }
+
+    function alternarDagesh() {
+        const el = document.getElementById('letra-animada');
+        const label = document.getElementById('status-label');
+        
+        if (temPonto) {
+            el.innerText = semDagesh;
+            label.innerText = "Som Suave (" + nomeSuave + ")";
+            falar(vozSuave);
+            temPonto = false;
+        } else {
+            el.innerText = comDagesh;
+            label.innerText = "Som Forte (" + nomeForte + ")";
+            falar(vozForte);
+            temPonto = true;
+        }
+    }
+
+    function falar(texto) {
+        const msg = new SpeechSynthesisUtterance(texto);
+        msg.lang = 'pt-BR';
+        msg.rate = 0.85;
+        window.speechSynthesis.speak(msg);
+    }
+
+    function falarIntro() {
+        falar(textoIntro);
+    }
+</script>
+
+</body>
+</html>

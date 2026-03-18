@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Alef:wght@400;700&display=swap" rel="stylesheet">
+    <title>Laboratório de Nekudot - Talmid</title>
+    <style>
+        :root { --primary: #1a2a3a; --secondary: #2980b9; --gold: #f39c12; --bg: #f4f7f6; --accent: #e74c3c; }
+        body { font-family: 'Segoe UI', 'Alef', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #333; line-height: 1.6; }
+        
+        .container { max-width: 650px; margin: 0 auto; }
+        h1 { color: var(--primary); border-left: 6px solid var(--gold); padding-left: 15px; }
+        .info-card { background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+
+        /* Display Central da Letra */
+        .letra-display {
+            position: relative; width: 220px; height: 220px; background: white; 
+            border: 4px solid var(--primary); margin: 30px auto; 
+            display: flex; justify-content: center; align-items: center;
+            border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .consoante { font-size: 140px; color: #000; z-index: 1; transition: 0.3s; }
+        .dagesh { position: absolute; color: var(--accent); font-size: 80px; top: 38%; left: 50%; transform: translate(-50%, -50%); z-index: 2; display: none; }
+        .nekudot { position: absolute; color: var(--secondary); font-size: 80px; bottom: 15px; left: 50%; transform: translateX(-50%); z-index: 2; }
+
+        /* Controles */
+        .painel-controles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .btn-nekudot { 
+            padding: 12px; background: white; border: 2px solid #ddd; border-radius: 8px; 
+            cursor: pointer; font-size: 0.9rem; transition: 0.2s; font-weight: bold;
+        }
+        .btn-nekudot:hover { border-color: var(--secondary); background: #f0f7ff; }
+        .btn-nav { width: 100%; padding: 18px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: bold; margin-top: 30px; cursor: pointer; }
+
+        /* Narrador e VLibras */
+        .acessibilidade { display: flex; gap: 10px; margin-bottom: 20px; }
+        .btn-audio { background: var(--accent); color: white; border: none; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="acessibilidade">
+        <button class="btn-audio" onclick="toggleNarracao()">🔊 Ouvir Explicação</button>
+    </div>
+
+    <h1>A Origem dos Sinais</h1>
+
+    <div class="info-card">
+        <p>Originalmente, o Hebraico era escrito apenas com consoantes. Entre os séculos VI e X d.C., um grupo de sábios chamados <strong>Massoretas</strong> criou os <span style="color:var(--secondary)">Nekudot (sinais diacríticos)</span> para preservar a pronúncia correta das Escrituras.</p>
+        
+        <p>Para exemplificar, usaremos o <strong>Aleph (א)</strong> e o <strong>Ayin (ע)</strong>. Tecnicamente, elas são mudas, funcionando como "suportes" invisíveis que assumem o som da vogal que as acompanha.</p>
+    </div>
+
+    <div class="letra-display">
+        <span class="consoante" id="char">א</span>
+        <span class="dagesh" id="ponto">ּ</span>
+        <span class="nekudot" id="vogal">ָ</span>
+    </div>
+
+    <div style="text-align: center; font-weight: bold; color: var(--secondary);" id="legenda-sinal">
+        Qamets: Som de "Á" (Trad: Á)
+    </div>
+
+    <div class="painel-controles">
+        <button class="btn-nekudot" onclick="mudar('א', 'ָ', 'Qamets: Som Á')">ָ Qamets (Á)</button>
+        <button class="btn-nekudot" onclick="mudar('א', 'ַ', 'Patach: Som Á curto')">ַ Patach (A)</button>
+        <button class="btn-nekudot" onclick="mudar('ע', 'ֵ', 'Tsere: Som Ê')">ֵ Tsere (Ê)</button>
+        <button class="btn-nekudot" onclick="mudar('ע', 'ֶ', 'Segol: Som É')">ֶ Segol (É)</button>
+        <button class="btn-nekudot" onclick="mudar('א', 'ִ', 'Chiriq: Som Í')">ִ Chiriq (Í)</button>
+        <button class="btn-nekudot" onclick="mudar('א', 'ֹ', 'Cholem: Som Ó')">ֹ Cholem (Ó)</button>
+        <button class="btn-nekudot" onclick="mudar('ע', 'ֻ', 'Qibuts: Som Ú')">ֻ Qibuts (Ú)</button>
+        <button class="btn-nekudot" onclick="mudar('א', 'ְ', 'Sheva: Som neutro/breve')">ְ Sheva (Breve)</button>
+    </div>
+
+    <button class="btn-nav" onclick="window.location.href='3.html'">PRÓXIMO: LETRAS SOFIT (FINAIS) →</button>
+
+</div>
+
+<div vw class="enabled">
+    <div vw-access-button class="active"></div>
+    <div vw-viewer class="wrapper">
+        <div class="vlibras-widget-wrapper"></div>
+    </div>
+</div>
+<script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+<script>new window.VLibras.Widget('https://vlibras.gov.br/app');</script>
+
+<script>
+    let narrando = false;
+    const msg = new SpeechSynthesisUtterance();
+    msg.lang = 'pt-BR';
+    msg.text = document.querySelector('.info-card').innerText;
+
+    function toggleNarracao() {
+        if (!narrando) {
+            window.speechSynthesis.speak(msg);
+            narrando = true;
+        } else {
+            window.speechSynthesis.cancel();
+            narrando = false;
+        }
+    }
+
+    function mudar(L, V, Texto) {
+        document.getElementById('char').innerText = L;
+        document.getElementById('vogal').innerText = V;
+        document.getElementById('legenda-sinal').innerText = Texto;
+        
+        // Pequeno efeito visual de "refresh"
+        const display = document.getElementById('char');
+        display.style.opacity = 0;
+        setTimeout(() => display.style.opacity = 1, 50);
+    }
+</script>
+
+</body>
+</html>

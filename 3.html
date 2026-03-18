@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Alef:wght@400;700&display=swap" rel="stylesheet">
+    <title>Alefbeit Animado - Talmid</title>
+    <style>
+        :root { --primary: #1a2a3a; --secondary: #2980b9; --gold: #f39c12; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', 'Alef', sans-serif; background: var(--bg); margin: 0; padding: 20px; text-align: center; }
+        
+        .container { max-width: 600px; margin: 0 auto; }
+        h1 { color: var(--primary); margin-bottom: 10px; }
+        
+        /* Botão de Narração Restaurado */
+        .btn-audio-intro { background: #fff; border: 2px solid var(--gold); padding: 10px 20px; border-radius: 50px; cursor: pointer; font-weight: bold; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; margin: 0 auto 20px auto; }
+
+        .instrucao { background: #fff; padding: 15px; border-radius: 10px; margin-bottom: 20px; font-size: 0.95rem; border-left: 5px solid var(--gold); text-align: left; }
+
+        .alefbeit-grid { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 12px; 
+            direction: rtl; 
+        }
+
+        .card-letra { 
+            background: white; border-radius: 12px; padding: 15px 5px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); cursor: pointer;
+            transition: 0.3s; border: 1px solid #eee;
+            opacity: 0; transform: scale(0.8);
+        }
+        .card-letra.show { opacity: 1; transform: scale(1); }
+        .card-letra:active { background: #f0f7ff; border-color: var(--secondary); }
+
+        .char { font-size: 3rem; color: #000; line-height: 1; display: block; }
+        .nome { font-size: 0.8rem; font-weight: bold; color: var(--secondary); display: block; margin-top: 5px; }
+
+        .btn-proximo { width: 100%; padding: 18px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: bold; margin-top: 30px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Alefbeit Animado</h1>
+    
+    <button class="btn-audio-intro" onclick="falarIntro()">
+        🔊 Narrar Introdução
+    </button>
+    
+    <div class="instrucao" id="texto-intro">
+        Toque em cada letra para ouvir seu nome e ver sua anatomia. O alfabeto hebraico é composto por 22 consoantes que guardam mistérios milenares.
+    </div>
+
+    <div class="alefbeit-grid" id="grid"></div>
+
+    <button class="btn-proximo" onclick="window.location.href='5.html'">AVANÇAR PARA LETRAS SOFIT (FINAIS) →</button>
+</div>
+
+<script>
+    // Configuração de nomes visuais vs fonética para o narrador
+    const alefbeit = [
+        {c: 'א', n: 'Aleph', voz: 'Álef'},
+        {c: 'ב', n: 'Bet/Vet', voz: 'Bet... Vét'},
+        {c: 'ג', n: 'Gimel', voz: 'Guímel'},
+        {c: 'ד', n: 'Dalet', voz: 'Dálet'},
+        {c: 'ה', n: 'He', voz: 'Rre'},
+        {c: 'ו', n: 'Vav', voz: 'Vav'},
+        {c: 'ז', n: 'Zayin', voz: 'Zayin'},
+        {c: 'ח', n: 'Chet', voz: 'Rrét'},
+        {c: 'ט', n: 'Tet', voz: 'Tet'},
+        {c: 'י', n: 'Yod', voz: 'Yod'},
+        {c: 'כ', n: 'Khaf', voz: 'Rrraf'},
+        {c: 'ל', n: 'Lamed', voz: 'Lámed'},
+        {c: 'מ', n: 'Mem', voz: 'Mem'},
+        {c: 'נ', n: 'Nun', voz: 'Nun'},
+        {c: 'ס', n: 'Samech', voz: 'Sámech'},
+        {c: 'ע', n: 'Ayin', voz: 'Ayin'},
+        {c: 'פ', n: 'Pe/Fe', voz: 'Pê... Fê'},
+        {c: 'צ', n: 'Tsade', voz: 'Tsade'},
+        {c: 'ק', n: 'Qof', voz: 'Qóf'},
+        {c: 'ר', n: 'Resh', voz: 'Rresh'},
+        {c: 'ש', n: 'Shin/Sin', voz: 'Shin... Sin'},
+        {c: 'ת', n: 'Tav', voz: 'Tav'}
+    ];
+
+    const grid = document.getElementById('grid');
+
+    alefbeit.forEach((l, i) => {
+        const card = document.createElement('div');
+        card.className = 'card-letra';
+        card.innerHTML = `<span class="char">${l.c}</span><span class="nome">${l.n}</span>`;
+        
+        card.onclick = () => {
+            const msg = new SpeechSynthesisUtterance(l.voz);
+            msg.lang = 'pt-BR';
+            msg.rate = 0.9; // Velocidade um pouco mais lenta para clareza
+            window.speechSynthesis.speak(msg);
+        };
+
+        grid.appendChild(card);
+        setTimeout(() => card.classList.add('show'), i * 80);
+    });
+
+    function falarIntro() {
+        const t = document.getElementById('texto-intro').innerText;
+        const msg = new SpeechSynthesisUtterance(t);
+        msg.lang = 'pt-BR';
+        window.speechSynthesis.speak(msg);
+    }
+</script>
+
+</body>
+</html>
