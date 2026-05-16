@@ -166,6 +166,13 @@
     }
 
     window.onload = carregarPergunta;
+       }
+
+    function enviar() {
+        const n = document.getElementById('nome').value;
+        if(!n) return alert("Preencha o nome!");
+        window.location.href = `mailto:escolateologicavance@gmail.com?subject=Certificado&body=Nome: ${n}`;
+            }
 </script>
 
 </body>
