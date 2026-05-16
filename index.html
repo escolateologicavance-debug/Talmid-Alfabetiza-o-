@@ -141,7 +141,17 @@
             s.style.display = 'none';
             document.getElementById('main-content').style.display = 'block';
         }, 400);
- 
+    }
+
+    function enviar() {
+        const nome = document.getElementById('nome').value;
+        const cpf = document.getElementById('cpf').value;
+        if(nome && cpf) {
+            alert('Solicitação enviada com sucesso!');
+        } else {
+            alert('Por favor, preencha todos os campos.');
+        }
+    }
 </script>
 
 </body>
