@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Alef:wght@400;700&display=swap" rel="stylesheet">
     <title>Quiz Talmid - Moré Gilberto</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
     <style>
         :root { --primary: #1a2a3a; --gold: #f39c12; --success: #27ae60; --error: #e74c3c; --bg: #f4f7f6; }
         body { font-family: 'Segoe UI', 'Alef', sans-serif; background: var(--bg); margin: 0; padding: 15px; color: #333; }
@@ -40,8 +42,41 @@
         /* Banner App */
         .banner-app { background: #e8f4fd; border: 2px solid var(--secondary); padding: 15px; border-radius: 12px; margin-top: 30px; font-size: 0.9rem; }
 
+        /* Entrada de Nome Inicial */
+        .nome-container { background: #fff; border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; text-align: left; }
+        .nome-container label { font-weight: bold; color: var(--primary); display: block; margin-bottom: 8px; }
+        .nome-container input { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
+
         /* Rodapé Jurídico */
         footer { margin-top: 40px; font-size: 0.75rem; color: #7f8c8d; line-height: 1.4; border-top: 1px solid #ddd; padding-top: 20px; }
+
+        /* Estilo do Certificado Oculto (Layout Elegante para o PDF A4 Paisagem) */
+        #certificado-pdf {
+            display: none;
+            width: 1000px;
+            height: 700px;
+            padding: 40px;
+            box-sizing: border-box;
+            background: #fff;
+        }
+        .cert-borda {
+            border: 15px double #1a2a3a;
+            height: 100%;
+            width: 100%;
+            padding: 40px;
+            box-sizing: border-box;
+            text-align: center;
+            position: relative;
+        }
+        .cert-faculdade { font-size: 2.2rem; font-weight: bold; color: #1a2a3a; margin: 0; font-family: 'Segoe UI', sans-serif; }
+        .cert-seminario { font-size: 1.8rem; color: #f39c12; margin: 5px 0 20px 0; font-family: 'Segoe UI', sans-serif; font-weight: bold; }
+        .cert-titulo { font-size: 3.5rem; font-family: 'Alef', serif; color: #1a2a3a; margin: 30px 0; letter-spacing: 2px; }
+        .cert-texto { font-size: 1.4rem; line-height: 1.8; color: #333; margin: 20px 50px; }
+        .cert-nome-aluno { font-size: 2.2rem; font-weight: bold; color: #1a2a3a; border-bottom: 2px solid #1a2a3a; display: inline-block; padding: 0 20px; margin: 10px 0; }
+        .cert-lei { font-size: 0.9rem; color: #7f8c8d; margin-top: 30px; font-style: italic; }
+        .cert-assinatura-bloco { margin-top: 60px; text-align: center; }
+        .cert-linha { width: 300px; border-top: 1px solid #333; margin: 0 auto 5px auto; }
+        .cert-cargo { font-size: 1.1rem; color: #555; }
     </style>
 </head>
 <body>
@@ -51,6 +86,11 @@
         <h2>Talmid - Desafio de Alfabetização</h2>
         <p>Moré Gilberto</p>
     </header>
+
+    <div class="nome-container" id="nome-box">
+        <label for="nome-estudante">Digite seu nome para o Certificado:</label>
+        <input type="text" id="nome-estudante" placeholder="Seu nome completo aqui">
+    </div>
 
     <div class="progress-container"><div class="progress-bar" id="progress"></div></div>
 
@@ -72,6 +112,31 @@
         Válido em todo território nacional conforme Art. 205 e 206 da Constituição Federal.<br>
         Itanhangá-MT - BR - Sé 21 | Todos os direitos reservados ©</p>
     </footer>
+</div>
+
+<div id="certificado-pdf">
+    <div class="cert-borda">
+        <div class="cert-faculdade">Faculdade AVANCE</div>
+        <div class="cert-seminario">Seminário HAZAQ</div>
+        
+        <div class="cert-titulo">CERTIFICADO</div>
+        
+        <div class="cert-texto">
+            Certificamos que <br>
+            <span class="cert-nome-aluno" id="cert-aluno-nome">Nome do Aluno</span><br>
+            concluiu com excelência, o Curso de Complementação do Hebraico Básico.
+        </div>
+        
+        <div class="cert-lei">
+            Lei nº 9.394/96 – Diretrizes e Bases da Educação Nacional
+        </div>
+        
+        <div class="cert-assinatura-bloco">
+            <div class="cert-linha"></div>
+            <strong>Gilberto Moreira</strong><br>
+            <span class="cert-cargo">Administração Geral</span>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -99,6 +164,7 @@
     ];
 
     let perguntaAtual = 0;
+    let nomeEstudanteSalvo = "";
 
     function carregarPergunta() {
         if (perguntaAtual >= bancoPerguntas.length) {
@@ -127,6 +193,12 @@
     }
 
     function checarResposta(escolha, correta) {
+        // Guardar o nome digitado para não perder se ele mudar durante o quiz
+        const inputNome = document.getElementById('nome-estudante');
+        if(inputNome && inputNome.value.trim() !== "") {
+            nomeEstudanteSalvo = inputNome.value.trim();
+        }
+
         const fb = document.getElementById('feedback');
         fb.style.display = "block";
 
@@ -150,13 +222,51 @@
     }
 
     function finalizarQuiz() {
+        // Esconde o box de digitação de nome inicial se ainda estiver visível
+        if(document.getElementById('nome-box')) {
+            document.getElementById('nome-box').style.display = 'none';
+        }
+
+        // Se ele não digitou no início, assume um nome padrão ou solicita rápido
+        if(!nomeEstudanteSalvo) {
+            const inputNome = document.getElementById('nome-estudante');
+            if(inputNome && inputNome.value.trim() !== "") {
+                nomeEstudanteSalvo = inputNome.value.trim();
+            } else {
+                nomeEstudanteSalvo = prompt("Por favor, digite seu nome completo para o certificado:") || "Estudante Talmid";
+            }
+        }
+
         document.getElementById('quiz-body').innerHTML = `
             <h2 style="color:var(--success)">Mazal Tov!</h2>
             <p>Você concluiu a base da alfabetização hebraica.</p>
-            <div style="font-size:4rem">📜</div>
-            <button class="btn-opcao" style="width:100%; margin-top:20px;" onclick="location.reload()">REINICIAR DESAFIO</button>
+            <div style="font-size:4rem; margin: 15px 0;">📜</div>
+            <button class="btn-opcao" style="width:100%; background: var(--primary); color: white; border: none; margin-bottom: 10px;" onclick="gerarPDF()">🎓 GERAR MEU CERTIFICADO EM PDF</button>
+            <button class="btn-opcao" style="width:100%;" onclick="location.reload()">REINICIAR DESAFIO</button>
         `;
         falar("Parabéns! Você concluiu o desafio.");
+    }
+
+    function gerarPDF() {
+        // Atualiza o nome do aluno dentro do layout estruturado do certificado
+        document.getElementById('cert-aluno-nome').innerText = nomeEstudanteSalvo;
+
+        const elemento = document.getElementById('certificado-pdf');
+        
+        // Configurações do PDF para ficar elegante em formato Paisagem (A4)
+        const opcoesConfig = {
+            margin:       10,
+            filename:     'Certificado_Hebraico_Basico.pdf',
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
+        };
+
+        // Exibe temporariamente para captura do script, gera e oculta novamente
+        elemento.style.display = 'block';
+        html2pdf().set(opcoesConfig).from(elemento).save().then(() => {
+            elemento.style.display = 'none';
+        });
     }
 
     function falar(t) {
@@ -166,13 +276,6 @@
     }
 
     window.onload = carregarPergunta;
-       }
-
-    function enviar() {
-        const n = document.getElementById('nome').value;
-        if(!n) return alert("Preencha o nome!");
-        window.location.href = `mailto:escolateologicavance@gmail.com?subject=Certificado&body=Nome: ${n}`;
-            }
 </script>
 
 </body>
